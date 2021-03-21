@@ -9,9 +9,9 @@ class elta {
                     const data = results.data;
                     let array = data.result[tr].result;
 
-                    if (!(data.status === 1)) reject(null);
-                    if (data.result[tr].status === 2) reject(null);
-                    if (array === "wrong number") reject('Invalid tracking number');
+                    if (!(data.status === 1)) reject({"status": "no result"});
+                    if (data.result[tr].status === 2) reject({"status": "no result"});
+                    if (array === "wrong number") reject({"status": "no result"});
 
                     resolve(array);
                 }).catch((err) => {
@@ -54,4 +54,47 @@ class geniki {
         })
     }
 }
-module.exports = { elta, geniki };
+
+class speedex {
+    get(tr) {
+        return new Promise(async (resolve, reject) => {
+            const { JSDOM } = jsdom;
+            const data = await axios.get(`http://www.speedex.gr/speedex/NewTrackAndTrace.aspx?number=${tr}`);
+            if(data.data.includes('Δεν βρέθηκαν')) reject({"status": "no result"})
+            const dom = new JSDOM(data.data, {url: 'http://www.speedex.gr'});
+            let number = 0;
+            let obj = 0;
+            let trData = {};
+            let stData = [];
+
+            //! Get status
+            Array.prototype.forEach.call(dom.window.document.getElementsByClassName('card-title'), (e) => {
+                if (e.innerHTML.includes('<p>')) {
+                    stData.push(`Η ΑΠΟΣΤΟΛΗ ΠΑΡΑΛΗΦΘΗ ΑΠΟ: ${e.innerHTML.split(': ')[1]}`);
+                } else {
+                    stData.push(e.innerHTML);
+                }
+            })
+
+            //! Get place, time and date
+            Array.prototype.forEach.call(dom.window.document.getElementsByClassName('card-subtitle'), (e) => {
+                if(!trData[obj]) trData[obj] = {};
+                let desc = e.innerHTML.trim().split('>')[1];
+
+                trData[obj].status = stData[obj];
+                trData[obj].place = desc.substring(0, desc.length - 6).split(',')[0];
+                trData[obj].date = desc.substring(0, desc.length - 6).split(',')[1].split(' ')[1];
+                trData[obj].time = desc.substring(0, desc.length - 6).split(',')[1].split(' ')[3];
+
+                number += 1;
+                if(number == 1) {
+                    number = 0;
+                    obj += 1;
+                }
+            })
+            resolve(trData);
+        })
+    }
+}
+
+module.exports = { elta, geniki, speedex };
