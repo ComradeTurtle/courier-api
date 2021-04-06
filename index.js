@@ -100,4 +100,30 @@ class speedex {
     }
 }
 
-module.exports = { elta, geniki, speedex };
+class acs {
+    get(tr) {
+        return new Promise(async(resolve, reject) => {
+            const config = {
+                headers: {
+                    get: {
+                        Cookie: `JSESSIONID=67D2C9C2770A0F92F982F9B28DB94564; X-Bonita-API-Token=6a8e5950-76fe-4dbb-a067-222912250864; track-wkfsrv-cookie-inform=true; BOS_Locale=en; JSESSIONID=3BE6A78424BA4CC23CC42D7A5D792077`
+                    }
+                }
+            }
+            const data = await axios.get(`https://wkfsrv.acscourier.net/bonita/API/extension/spCaller?q=spb_track_shipment&code=${tr}&frm_locale=EL&rs_spe_type=multiple&rs_table_names=details`, config);
+            let arr = JSON.parse(JSON.stringify(data.data));
+            let trArray = arr.table1;
+            if (trArray.length == 0) reject({ "status": "no result" });
+            let result = [];
+            trArray.reverse();
+            trArray.forEach((e) => {
+                let obj = { status: e.Περιγραφή, place: e.Σημείο_ελέγχου, date: e.Ημερομηνία_ώρα.split('T')[0], time: e.Ημερομηνία_ώρα.split('T')[1].substring(0, e.Ημερομηνία_ώρα.split('T')[1].length - 8) };
+                result.push(obj);
+            })
+            result.pop();
+            resolve(result);
+        })
+    }
+}
+
+module.exports = { elta, geniki, speedex, acs };
