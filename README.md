@@ -9,6 +9,7 @@ Node.js module that interfaces with Greek courier companies.
 - ..and more to come!
 
 ## Usage example
+`npm i courier-api`
 ```js
 const geniki = new(require("courier-api").geniki);
 const speedex = new(require("courier-api").speedex);
