@@ -60,5 +60,9 @@ const { geniki, speedex, elta, acs, easymail } = require('courier-api');
     await new acs().get('TRACK_ID')
         .then((result) => console.log(result))
         .catch((error) => console.error(error));
+        
+    await easymail.get('TRACK_ID')
+        .then((r) => console.log(r))
+        .catch((e) => console.error(e));
 })();
 ```
