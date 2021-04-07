@@ -17,21 +17,44 @@ const elta = new(require("courier-api").elta);
 const acs = new(require("courier-api").acs);
 
 let init = async() => {
-    await elta.get("PD280101275GR")
+    await elta.get("TRACK_ID")
         .then((r) => console.log(r))
         .catch((e) => console.error(e));
 
-    await geniki.get('4307428974')
+    await geniki.get('TRACK_ID')
         .then((r) => console.log(r))
         .catch((e) => console.log(e));
 
-    await speedex.get('700005173407')
+    await speedex.get('TRACK_ID')
         .then((r) => console.log(r))
         .catch((e) => console.error(e));
 
-    await acs.get('304382607')
+    await acs.get('TRACK_ID')
         .then((r) => console.log(r))
         .catch((e) => console.error(e));
+}
+
+init();
+```
+or
+```js
+const { geniki, speedex, elta, acs } = require('courier-api');
+const init = asnyc() => {
+    await new elta().get('TRACK_ID')
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
+        
+    await new geneki().get('TRACK_ID')
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
+        
+    await new speedex().get('TRACK_ID')
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
+        
+    await new acs().get('TRACK_ID')
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
 }
 
 init();
