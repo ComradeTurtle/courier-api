@@ -8,11 +8,7 @@ class elta {
                 .then((results) => {
                     const data = results.data;
                     let array = data.result[tr].result;
-
-                    if (!(data.status === 1)) reject({ "status": "no result" });
-                    if (data.result[tr].status === 2) reject({ "status": "no result" });
-                    if (array === "wrong number") reject({ "status": "no result" });
-
+                    if (!(data.status === 1) || data.result[tr].status === 2 || array === "wrong number") reject({ "status": "no result" });
                     resolve(array);
                 }).catch((err) => {
                     reject(err);
@@ -31,7 +27,6 @@ class geniki {
             let number = 0;
             let obj = 0;
             let trData = {};
-            let trArray = [];
 
             Array.prototype.forEach.call(trDOM.window.document.getElementsByTagName('div'), (e) => {
 
@@ -126,4 +121,42 @@ class acs {
     }
 }
 
-module.exports = { elta, geniki, speedex, acs };
+class easymail {
+    get(tr) {
+        return new Promise(async(resolve, reject) => {
+            const data = await axios.get(`https://trackntrace.easymail.gr/${tr}`);
+            const { JSDOM } = jsdom;
+            const response = data.data;
+            const dom = new JSDOM(response);
+            let number = 0;
+            let obj = 0;
+            let trData = {};
+
+            Array.prototype.forEach.call(dom.window.document.getElementsByClassName('table-hover'), (e) => {
+                Array.prototype.forEach.call(e.getElementsByTagName('td'), (a) => {
+                    if (!trData[obj]) trData[obj] = {};
+                    if (a.innerHTML.includes('/')) {
+                        if (a.innerHTML.includes('<a')) return;
+                        trData[obj].date = a.innerHTML.split('  ')[0];
+                        trData[obj].time = a.innerHTML.split('  ')[1].substring(0, a.innerHTML.split('  ')[1].length - 3);
+                    } else if (a.innerHTML == a.innerHTML.toUpperCase()) {
+                        trData[obj].place = a.innerHTML.toUpperCase();
+                    } else trData[obj].status = a.innerHTML;
+
+                    number += 1;
+                    if (number == 3) {
+                        number = 0;
+                        obj += 1;
+                    }
+                })
+                if (Object.keys(trData).length < 1) reject({ "status": "no result" });
+                let array = Object.values(trData);
+                array.reverse();
+                array.pop();
+                resolve(array);
+            })
+        })
+    }
+}
+
+module.exports = { elta, geniki, speedex, acs, easymail };

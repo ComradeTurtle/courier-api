@@ -6,15 +6,18 @@ Node.js module that interfaces with Greek courier companies.
 - ACS Courier (acscourier.net)
 - Γενική Ταχυδρομική (taxydromiki.com)
 - Speedex (speedex.com)
+- EasyMail (easymail.gr)
 - ..and more to come!
 
 ## Usage example
 `npm i courier-api`
 ```js
-const geniki = new(require("courier-api").geniki);
 const speedex = new(require("courier-api").speedex);
+const geniki = new(require("courier-api").geniki);
+const easymail = new(require("courier-api").acs);
 const elta = new(require("courier-api").elta);
 const acs = new(require("courier-api").acs);
+
 
 (async () => {
     await elta.get("TRACK_ID")
@@ -32,11 +35,15 @@ const acs = new(require("courier-api").acs);
     await acs.get('TRACK_ID')
         .then((r) => console.log(r))
         .catch((e) => console.error(e));
+
+    await easymail.get('TRACK_ID')
+        .then((r) => console.log(r))
+        .catch((e) => console.error(e));
 });
 ```
 or
 ```js
-const { geniki, speedex, elta, acs } = require('courier-api');
+const { geniki, speedex, elta, acs, easymail } = require('courier-api');
 (async () => {
     await new elta().get('TRACK_ID')
         .then((result) => console.log(result))
