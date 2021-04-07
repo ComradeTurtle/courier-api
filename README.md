@@ -16,7 +16,7 @@ const speedex = new(require("courier-api").speedex);
 const elta = new(require("courier-api").elta);
 const acs = new(require("courier-api").acs);
 
-let init = async() => {
+(async () => {
     await elta.get("TRACK_ID")
         .then((r) => console.log(r))
         .catch((e) => console.error(e));
@@ -32,14 +32,12 @@ let init = async() => {
     await acs.get('TRACK_ID')
         .then((r) => console.log(r))
         .catch((e) => console.error(e));
-}
-
-init();
+});
 ```
 or
 ```js
 const { geniki, speedex, elta, acs } = require('courier-api');
-const init = asnyc() => {
+(async () => {
     await new elta().get('TRACK_ID')
         .then((result) => console.log(result))
         .catch((error) => console.error(error));
@@ -55,7 +53,5 @@ const init = asnyc() => {
     await new acs().get('TRACK_ID')
         .then((result) => console.log(result))
         .catch((error) => console.error(error));
-}
-
-init();
+})();
 ```
