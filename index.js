@@ -98,7 +98,7 @@ class speedex {
 class acs {
     get(tr) {
         return new Promise(async(resolve, reject) => {
-            let token = await axios.get(`https://wkfsrv.acscourier.net/bonita/tba.jsp?tk=track-3043826074`, { maxRedirects: 0 }).catch((err) => { return err.response.headers['set-cookie'] });
+            let token = await axios.get(`https://wkfsrv.acscourier.net/bonita/tba.jsp?tk=track-${tr}`, { maxRedirects: 0 }).catch((err) => { return err.response.headers['set-cookie'] });
             const config = {
                 headers: {
                     get: {
@@ -117,7 +117,6 @@ class acs {
                 let obj = { status: e.Περιγραφή, place: e.Σημείο_ελέγχου, date: e.Ημερομηνία_ώρα.split('T')[0], time: e.Ημερομηνία_ώρα.split('T')[1].substring(0, e.Ημερομηνία_ώρα.split('T')[1].length - 8) };
                 result.push(obj);
             })
-            result.pop();
             resolve(result);
         })
     }
