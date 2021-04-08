@@ -101,7 +101,7 @@ class acs {
             const config = {
                 headers: {
                     get: {
-                        Cookie: `JSESSIONID=67D2C9C2770A0F92F982F9B28DB94564; X-Bonita-API-Token=6a8e5950-76fe-4dbb-a067-222912250864; track-wkfsrv-cookie-inform=true; BOS_Locale=en; JSESSIONID=3BE6A78424BA4CC23CC42D7A5D792077`
+                        Cookie: `JSESSIONID=F356BD32A3768E1B636797282E69F00C; X-Bonita-API-Token=c0bbdb7c-153e-4be4-a10c-d5a385b126ff; track-wkfsrv-cookie-inform=true; BOS_Locale=en; __utmc=250736406; __utmz=250736406.1617783440.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); _ga=GA1.2.846957403.1617783440; _gid=GA1.2.1210836973.1617783441; __utma=250736406.846957403.1617783440.1617783440.1617826457.2; JSESSIONID=A7322823AF4E45A6BC9FE2E1F1954E39`
                     }
                 }
             }
