@@ -14,7 +14,7 @@ Node.js module that interfaces with Greek courier companies.
 ```js
 const speedex = new(require("courier-api").speedex);
 const geniki = new(require("courier-api").geniki);
-const easymail = new(require("courier-api").acs);
+const easymail = new(require("courier-api").easymail);
 const elta = new(require("courier-api").elta);
 const acs = new(require("courier-api").acs);
 
@@ -49,7 +49,7 @@ const { geniki, speedex, elta, acs, easymail } = require('courier-api');
         .then((result) => console.log(result))
         .catch((error) => console.error(error));
         
-    await new geneki().get('TRACK_ID')
+    await new geniki().get('TRACK_ID')
         .then((result) => console.log(result))
         .catch((error) => console.error(error));
         
@@ -61,7 +61,7 @@ const { geniki, speedex, elta, acs, easymail } = require('courier-api');
         .then((result) => console.log(result))
         .catch((error) => console.error(error));
         
-    await easymail.get('TRACK_ID')
+    await easymail().get('TRACK_ID')
         .then((r) => console.log(r))
         .catch((e) => console.error(e));
 })();
