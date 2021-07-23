@@ -1,5 +1,6 @@
 const axios = require("axios");
 const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
 
 class elta {
     get(tr) {
@@ -20,7 +21,6 @@ class elta {
 class geniki {
     get(tr) {
         return new Promise(async(resolve, reject) => {
-            const { JSDOM } = jsdom;
             const data = await axios.get(`https://www.taxydromiki.com/track/${tr}`);
             const dom = new JSDOM(data.data, { url: 'https://www.taxydromiki.com' });
             const trDOM = new JSDOM(dom.window.document.getElementById('edit-content').innerHTML);
@@ -55,7 +55,6 @@ class geniki {
 class speedex {
     get(tr) {
         return new Promise(async(resolve, reject) => {
-            const { JSDOM } = jsdom;
             const data = await axios.get(`http://www.speedex.gr/speedex/NewTrackAndTrace.aspx?number=${tr}`);
             if (data.data.includes('Δεν βρέθηκαν')) reject({ "status": "no result" })
             const dom = new JSDOM(data.data, { url: 'http://www.speedex.gr' });
@@ -99,6 +98,7 @@ class acs {
     get(tr) {
         return new Promise(async(resolve, reject) => {
             const res = await axios.get(`https://api.acscourier.net/api/parcels/search/${tr}`, {headers: {'accept-language': 'el', 'X-Country': 'GR'}});
+            if(JSON.parse(JSON.stringify(res.data.count)) == 0) return reject('{"status": "no result"}');
             const data = JSON.parse(JSON.stringify(res.data.items[0].statusHistory));
             let obj = 0;
             let trData = {};
@@ -112,10 +112,8 @@ class acs {
                 trData[obj].time = e.controlPointDate.split("T")[1].split('.')[0];
 
                 obj += 1;
-
-                // 2021-07-19 T 10:16:25.2
             })
-            console.log(Object.values(trData));
+            resolve(Object.values(trData));
         })
     }
 }
@@ -124,7 +122,6 @@ class easymail {
     get(tr) {
         return new Promise(async(resolve, reject) => {
             const data = await axios.get(`https://trackntrace.easymail.gr/${tr}`);
-            const { JSDOM } = jsdom;
             const response = data.data;
             const dom = new JSDOM(response);
             let number = 0;
@@ -158,4 +155,41 @@ class easymail {
     }
 }
 
-module.exports = { elta, geniki, speedex, acs, easymail };
+class dhl {
+    get(tr) {
+        return new Promise(async(resolve, reject) => {
+            axios.get(`https://api-eu.dhl.com/track/shipments?trackingNumber=${tr}&language=el`, {headers: {'DHL-API-Key': '0kCkU1GnqL0DH434TnFdX4zBznXDQTa4'}})
+            .then((res) => {
+                const origin = res.data.shipments[0].events;
+                let obj = 0;
+                let trData = {};
+                origin.forEach((e) => {
+                    if (!trData[obj]) trData[obj] = {};
+    
+                    trData[obj].status = e.description;
+                    trData[obj].place = e.location.address.addressLocality;
+                    trData[obj].date = e.timestamp.split("T")[0];
+                    trData[obj].time = e.timestamp.split("T")[1];
+    
+                    obj += 1;
+                })
+                resolve(Object.values(trData).reverse());
+            })
+            .catch((err) => {
+                switch(err.response.status) {
+                    case 404:
+                        reject('{"status": "no result"}');
+                        break;
+                    case 429:
+                        reject('{"status": "ratelimited"}');
+                        break;
+                    default:
+                        reject('{"status": "unspecified error"}');
+                        break;
+                    }
+            })
+        })
+    }
+}
+
+module.exports = { elta, geniki, speedex, acs, easymail, dhl };

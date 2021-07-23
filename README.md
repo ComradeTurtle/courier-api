@@ -7,6 +7,7 @@ Node.js module that interfaces with Greek courier companies.
 - Γενική Ταχυδρομική (taxydromiki.com)
 - Speedex (speedex.com)
 - EasyMail (easymail.gr)
+- DHL (dhl.com)
 - ..and more to come!
 
 ## Usage example
@@ -17,6 +18,7 @@ const geniki = new(require("courier-api").geniki);
 const easymail = new(require("courier-api").easymail);
 const elta = new(require("courier-api").elta);
 const acs = new(require("courier-api").acs);
+const dhl = new(require("courier-api").dhl);
 
 
 (async () => {
@@ -39,11 +41,15 @@ const acs = new(require("courier-api").acs);
     await easymail.get('TRACK_ID')
         .then((r) => console.log(r))
         .catch((e) => console.error(e));
+
+    await dhl.get('TRACK_ID')
+        .then((r) => console.log(r))
+        .catch((e) => console.error(e));
 });
 ```
 or
 ```js
-const { geniki, speedex, elta, acs, easymail } = require('courier-api');
+const { geniki, speedex, elta, acs, easymail, dhl } = require('courier-api');
 (async () => {
     await new elta().get('TRACK_ID')
         .then((result) => console.log(result))
@@ -62,7 +68,11 @@ const { geniki, speedex, elta, acs, easymail } = require('courier-api');
         .catch((error) => console.error(error));
         
     await new easymail().get('TRACK_ID')
-        .then((r) => console.log(r))
-        .catch((e) => console.error(e));
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
+
+    await new dhl().get('TRACK_ID')
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
 })();
 ```
