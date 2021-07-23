@@ -98,26 +98,24 @@ class speedex {
 class acs {
     get(tr) {
         return new Promise(async(resolve, reject) => {
-            let token = await axios.get(`https://wkfsrv.acscourier.net/bonita/tba.jsp?tk=track-${tr}`, { maxRedirects: 0 }).catch((err) => { return err.response.headers['set-cookie'] });
-            const config = {
-                headers: {
-                    get: {
-                        Cookie: token
-                    }
-                }
-            }
-            const data = await axios.get(`https://wkfsrv.acscourier.net/bonita/API/extension/spCaller?q=spb_track_shipment&code=${tr}&frm_locale=EL&rs_spe_type=multiple&rs_table_names=details`, config);
+            const res = await axios.get(`https://api.acscourier.net/api/parcels/search/${tr}`, {headers: {'accept-language': 'el', 'X-Country': 'GR'}});
+            const data = JSON.parse(JSON.stringify(res.data.items[0].statusHistory));
+            let obj = 0;
+            let trData = {};
 
-            let arr = JSON.parse(JSON.stringify(data.data));
-            let trArray = arr.table1;
-            if (trArray.length == 0) reject({ "status": "no result" });
-            let result = [];
-            trArray.reverse();
-            trArray.forEach((e) => {
-                let obj = { status: e.Περιγραφή, place: e.Σημείο_ελέγχου, date: e.Ημερομηνία_ώρα.split('T')[0], time: e.Ημερομηνία_ώρα.split('T')[1].substring(0, e.Ημερομηνία_ώρα.split('T')[1].length - 8) };
-                result.push(obj);
+            data.forEach((e) => {
+                if (!trData[obj]) trData[obj] = {};
+
+                trData[obj].status = e.description;
+                trData[obj].place = e.controlPoint;
+                trData[obj].date = e.controlPointDate.split("T")[0];
+                trData[obj].time = e.controlPointDate.split("T")[1].split('.')[0];
+
+                obj += 1;
+
+                // 2021-07-19 T 10:16:25.2
             })
-            resolve(result);
+            console.log(Object.values(trData));
         })
     }
 }
