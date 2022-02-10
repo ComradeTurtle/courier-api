@@ -19,6 +19,7 @@ const easymail = new(require("courier-api").easymail);
 const elta = new(require("courier-api").elta);
 const acs = new(require("courier-api").acs);
 const dhl = new(require("courier-api").dhl);
+const speedpak = new(require("courier-api").speedpak);
 
 
 (async () => {
@@ -45,11 +46,15 @@ const dhl = new(require("courier-api").dhl);
     await dhl.get('TRACK_ID')
         .then((r) => console.log(r))
         .catch((e) => console.error(e));
+
+    await speedpak.get('TRACK_ID')
+        .then((r) => console.log(r))
+        .catch((e) => console.error(e));
 });
 ```
 or
 ```js
-const { geniki, speedex, elta, acs, easymail, dhl } = require('courier-api');
+const { geniki, speedex, elta, acs, easymail, dhl, speedpak } = require('courier-api');
 (async () => {
     await new elta().get('TRACK_ID')
         .then((result) => console.log(result))
@@ -72,6 +77,10 @@ const { geniki, speedex, elta, acs, easymail, dhl } = require('courier-api');
         .catch((error) => console.error(error));
 
     await new dhl().get('TRACK_ID')
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
+
+    await new speedpak().get('TRACK_ID')
         .then((result) => console.log(result))
         .catch((error) => console.error(error));
 })();
