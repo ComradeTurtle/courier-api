@@ -8,6 +8,7 @@ Node.js module that interfaces with Greek courier companies.
 - Speedex (speedex.com)
 - EasyMail (easymail.gr)
 - DHL (dhl.com)
+- SpeedPAK Standard / Economy (https://www.orangeconnex.com/)
 - ..and more to come!
 
 ## Usage example
