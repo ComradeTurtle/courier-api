@@ -192,4 +192,52 @@ class dhl {
     }
 }
 
-module.exports = { elta, geniki, speedex, acs, easymail, dhl };
+class speedpak {
+    get(tr) {
+        return new Promise(async(resolve, reject) => {
+            let config = {
+                method: 'post',
+                url: 'https://azure-cn.orangeconnex.com/oc/capricorn-website/website/v1/tracking/traces',
+                headers: { 
+                  'Content-Type': 'application/json'
+                },
+                data: `{"trackingNumbers": ["${tr}"], "language": "en-US"}`
+              };
+            axios(config)
+            .then((results) => {
+                const data = results.data;
+                if(!data.success) return reject('{"status": "unspecified error"}');
+                if(data.result.notExistsTrackingNumbers.length !== 0) return reject('{"status": "no result"}');
+
+                let array = data.result.waybills[0].traces;
+                let obj = 0;
+                let trData = {};
+                array.forEach((e) => {
+                    if (!trData[obj]) trData[obj] = {};
+
+                    let date = new Date(e.oprTimestamp);
+                    let placeString;
+                    if (e.oprCountry && !e.oprCity) {
+                        placeString = `${e.oprCountry}`;
+                    } else if (!e.oprCountry && e.oprCity) {
+                        placeString = `${e.oprCity}`;
+                    } else if (!e.oprCountry && !e.oprCity) {
+                        placeString = "";
+                    } else {
+                        placeString = `${e.oprCity}, ${e.oprCountry}`;
+                    }
+
+                    trData[obj].status = e.eventDesc;
+                    trData[obj].place = placeString;
+                    trData[obj].date = date.toLocaleDateString('en-GB');
+                    trData[obj].time = date.toLocaleTimeString('it-IT');
+
+                    obj += 1;
+                })
+                resolve(Object.values(trData).reverse());
+            })
+        })
+    }
+}
+
+module.exports = { elta, geniki, speedex, acs, easymail, dhl, speedpak };
