@@ -1,30 +1,46 @@
 {
-    "name": "courier-api",
-    "version": "1.1.4",
-    "main": "./index",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/ComradeTurtle/courier-api.git"
-    },
-    "author": "ComradeTurtle <giorgosd1300@shadowct.eu>",
-    "license": "Apache-2.0",
-    "engines": {
-        "node": ">=14.0.0"
-    },
-    "description": "Node.js module that interfaces with Greek courier companies.",
-    "bugs": {
-        "url": "https://github.com/ComradeTurtle/courier-api/issues"
-    },
-    "homepage": "https://github.com/ComradeTurtle/courier-api#readme",
-    "directories": {
-        "lib": "lib"
-    },
-    "dependencies": {
-        "axios": "^0.21.1",
-        "jsdom": "^16.5.1"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\""
-    },
-    "keywords": []
+  "name": "courier-api",
+  "description": "Node.js module that interfaces with Greek courier companies.",
+  "version": "2.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\"",
+    "prepublish": "tsc"
+  },
+  "author": "ComradeTurtle <giorgosd1300@shadowct.eu>",
+  "contributors": [
+    {
+      "email": "lambrosagris@gmail.com",
+      "name": "Tougrel",
+      "url": "https://github.com/Tougrel"
+    }
+  ],
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/ComradeTurtle/courier-api/issues"
+  },
+  "homepage": "https://github.com/ComradeTurtle/courier-api#readme",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ComradeTurtle/courier-api.git"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "jsdom": "^16.7.0"
+  },
+  "keywords": [
+    "courier-api",
+    "greek couriers",
+    "courier"
+  ],
+  "devDependencies": {
+    "@types/jsdom": "^16.2.14"
+  }
 }
