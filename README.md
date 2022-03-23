@@ -15,22 +15,27 @@ Node.js module that interfaces with Greek courier companies.
 
 ## Install
 
-> `npm i courier-api`or `yarn add courier-api`
+Using npm
+- `npm install courier-api`
+
+Using yarn
+- `yarn add courier-api`
 
 ## Usage example
 
 ```js
-const DHL = new (require("courier-api").speedex);
+const DHL = new (require("courier-api").DHL);
 // or
 const {DHL} = require("courier-api");
 // It's the same for the other supported couriers
 
-DHL.get("TRACK_ID").then((response) => {
+const courier = new DHL();
+courier.get("TRACK_ID").then((response) => {
 	/* your code here */
 }).catch(console.error);
 // or
 (async () => {
-	const data = await DHL.get("TRACK_ID");
+	const data = await courier.get("TRACK_ID");
 	/* your code here */
 })();
 
