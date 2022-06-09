@@ -11,6 +11,7 @@ Node.js module that interfaces with Greek courier companies.
 - EasyMail ([website](easymail.gr))
 - DHL ([website](dhl.com))
 - SpeedPAK Standard / Economy ([website](https://www.orangeconnex.com/))
+- SendX (Skroutz Last Mile) ([website](ttps://www.skroutzlastmile.gr/))
 - ..and more to come!
 
 ## Install
