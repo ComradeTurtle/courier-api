@@ -1,6 +1,6 @@
 declare module "courier" {
     interface CourierClass<T> {
-        get(tracking: string): Promise<T | T[]>;
+        get(tracking: string, lang?: string): Promise<T | T[]>;
     }
 
     interface CourierData {
@@ -104,6 +104,14 @@ declare module "courier" {
                 oprCity?: string;
                 oprTimestamp: string;
                 oprCountry?: string;
+            }
+        }
+
+        namespace SendX {
+            interface trackingDetails {
+                description: string;
+                updatedAt: string;
+                description_gr: string;
             }
         }
     }

@@ -1,6 +1,6 @@
-import Axios, {AxiosResponse} from "axios";
-import {JSDOM} from "jsdom"
-import {CourierClass, CourierData, Responses, TrackingData} from "courier";
+import Axios, { AxiosResponse } from "axios";
+import { JSDOM } from "jsdom"
+import { CourierClass, CourierData, Responses, TrackingData, Utils } from "courier";
 
 export class Elta implements CourierClass<CourierData> {
     get(tracking: string): Promise<CourierData[]> {
@@ -12,7 +12,7 @@ export class Elta implements CourierClass<CourierData> {
             }).then((result: AxiosResponse<Responses.Elta>) => {
                 const data = result.data.result[tracking].result;
                 if (typeof data === "string")
-                    reject({status: "No results were provided by the selected courier service!"});
+                    reject({ status: "No results were provided by the selected courier service!" });
                 else resolve(data);
             }).catch(reject);
         });
@@ -92,13 +92,13 @@ export class DHL implements CourierClass<CourierData> {
             }).catch((err) => {
                 switch (err?.response?.status) {
                     case 404:
-                        reject({status: "no result"});
+                        reject({ status: "no result" });
                         break;
                     case 429:
-                        reject({status: "rate limited"});
+                        reject({ status: "rate limited" });
                         break;
                     default:
-                        reject({status: "unspecified error"});
+                        reject({ status: "unspecified error" });
                         break;
                 }
             });
@@ -118,10 +118,10 @@ export class SpeedPak implements CourierClass<CourierData> {
                 data: `{"trackingNumbers": ["${tracking}"], "language": "en-US"}`
             }).then((result: AxiosResponse<Responses.SpeedPack>) => {
                 if (!result.data.success)
-                    return reject({status: "Unspecified Error"});
+                    return reject({ status: "Unspecified Error" });
 
                 if (result.data.result.notExistsTrackingNumbers.length !== 0)
-                    return reject({status: "No result"});
+                    return reject({ status: "No result" });
 
                 let obj = 0, trData: TrackingData = {};
                 result.data.result.waybills[0].traces.forEach((trace) => {
@@ -169,7 +169,7 @@ export class Geniki implements CourierClass<CourierData> {
 
                 const contentElement = DOM.window.document.getElementById("edit-content");
                 if (!contentElement)
-                    reject({status: "No results were provided by the selected courier service!"});
+                    reject({ status: "No results were provided by the selected courier service!" });
 
                 const trDOM = new JSDOM(contentElement?.innerHTML);
                 let obj = 0, trData: TrackingData = {};
@@ -210,10 +210,10 @@ export class Geniki implements CourierClass<CourierData> {
                 });
 
                 if (Object.keys(trData).length < 1)
-                    reject({status: "No results were provided by the selected courier service!"});
+                    reject({ status: "No results were provided by the selected courier service!" });
 
                 resolve(Object.values(trData));
-            }).catch(() => reject({status: "Invalid tracking code!"}));
+            }).catch(() => reject({ status: "Invalid tracking code!" }));
         });
     }
 }
@@ -282,7 +282,7 @@ export class EasyMail implements CourierClass<CourierData> {
                             if (!item.innerHTML.includes("<a")) {
                                 trData[obj].date = item.innerHTML.split(" ")[0];
                                 trData[obj].time = item.innerHTML.split(" ")[1]
-                                  .substring(0, item.innerHTML.split(" ")[1].length - 3);
+                                    .substring(0, item.innerHTML.split(" ")[1].length - 3);
                             }
                         }
                         else if (item.innerHTML === item.innerHTML.toUpperCase())
@@ -298,10 +298,41 @@ export class EasyMail implements CourierClass<CourierData> {
                 });
 
                 if (Object.keys(trData).length < 1)
-                    reject({status: "No result"});
+                    reject({ status: "No result" });
 
                 resolve(Object.values(trData).reverse().pop());
             }).catch(reject);
         });
     }
+}
+
+export class SendX implements CourierClass<CourierData> {
+    get(tracking: string, lang?: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            Axios.request({
+                method: 'GET',
+                url: `https://api.sendx.gr/user/hp/${tracking}`
+            })
+                .then((result) => {
+                    console.log(lang);
+                    let obj = 0, data = result.data, trData: TrackingData = {};
+
+                    data.trackingDetails.forEach((e: Utils.SendX.trackingDetails) => {
+                        if (!trData[obj]) trData[obj] = {};
+                        let rawdata = new Date(e.updatedAt);
+
+                        trData[obj].time = rawdata.toLocaleTimeString('en-US', { hour12: false });
+                        trData[obj].date = rawdata.toLocaleDateString('en-GB');
+                        if (lang === 'GR') trData[obj].status = e.description_gr
+                        else trData[obj].status = e.description;
+
+                        obj++;
+                    })
+                    resolve(Object.values(trData));
+                }).catch((err) => {
+                    if (err.statusCode == 400) reject({ status: "No result" });
+                });
+        })
+    }
+
 }

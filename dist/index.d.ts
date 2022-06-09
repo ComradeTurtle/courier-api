@@ -20,3 +20,6 @@ export declare class Speedex implements CourierClass<CourierData> {
 export declare class EasyMail implements CourierClass<CourierData> {
     get(tracking: string): Promise<any>;
 }
+export declare class SendX implements CourierClass<CourierData> {
+    get(tracking: string, lang?: string): Promise<any>;
+}

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EasyMail = exports.Speedex = exports.Geniki = exports.SpeedPak = exports.DHL = exports.ACS = exports.Elta = void 0;
+exports.SendX = exports.EasyMail = exports.Speedex = exports.Geniki = exports.SpeedPak = exports.DHL = exports.ACS = exports.Elta = void 0;
 const axios_1 = __importDefault(require("axios"));
 const jsdom_1 = require("jsdom");
 class Elta {
@@ -283,3 +283,34 @@ class EasyMail {
     }
 }
 exports.EasyMail = EasyMail;
+class SendX {
+    get(tracking, lang) {
+        return new Promise((resolve, reject) => {
+            axios_1.default.request({
+                method: 'GET',
+                url: `https://api.sendx.gr/user/hp/${tracking}`
+            })
+                .then((result) => {
+                console.log(lang);
+                let obj = 0, data = result.data, trData = {};
+                data.trackingDetails.forEach((e) => {
+                    if (!trData[obj])
+                        trData[obj] = {};
+                    let rawdata = new Date(e.updatedAt);
+                    trData[obj].time = rawdata.toLocaleTimeString('en-US', { hour12: false });
+                    trData[obj].date = rawdata.toLocaleDateString('en-GB');
+                    if (lang === 'GR')
+                        trData[obj].status = e.description_gr;
+                    else
+                        trData[obj].status = e.description;
+                    obj++;
+                });
+                resolve(Object.values(trData));
+            }).catch((err) => {
+                if (err.statusCode == 400)
+                    reject({ status: "No result" });
+            });
+        });
+    }
+}
+exports.SendX = SendX;
