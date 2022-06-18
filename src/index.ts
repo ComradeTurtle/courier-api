@@ -12,7 +12,7 @@ export class Elta implements CourierClass<CourierData> {
             }).then((result: AxiosResponse<Responses.Elta>) => {
                 const data = result.data.result[tracking].result;
                 if (typeof data === "string")
-                    reject({ status: "No results were provided by the selected courier service!" });
+                    reject({ status: "no result" });
                 else resolve(data);
             }).catch(reject);
         });
@@ -121,7 +121,7 @@ export class SpeedPak implements CourierClass<CourierData> {
                     return reject({ status: "Unspecified Error" });
 
                 if (result.data.result.notExistsTrackingNumbers.length !== 0)
-                    return reject({ status: "No result" });
+                    return reject({ status: "no result" });
 
                 let obj = 0, trData: TrackingData = {};
                 result.data.result.waybills[0].traces.forEach((trace) => {
@@ -169,7 +169,7 @@ export class Geniki implements CourierClass<CourierData> {
 
                 const contentElement = DOM.window.document.getElementById("edit-content");
                 if (!contentElement)
-                    reject({ status: "No results were provided by the selected courier service!" });
+                    reject({ status: "no result" });
 
                 const trDOM = new JSDOM(contentElement?.innerHTML);
                 let obj = 0, trData: TrackingData = {};
@@ -210,10 +210,10 @@ export class Geniki implements CourierClass<CourierData> {
                 });
 
                 if (Object.keys(trData).length < 1)
-                    reject({ status: "No results were provided by the selected courier service!" });
+                    reject({ status: "no result" });
 
                 resolve(Object.values(trData));
-            }).catch(() => reject({ status: "Invalid tracking code!" }));
+            }).catch(() => reject({ status: "invalid tracking code" }));
         });
     }
 }
@@ -298,7 +298,7 @@ export class EasyMail implements CourierClass<CourierData> {
                 });
 
                 if (Object.keys(trData).length < 1)
-                    reject({ status: "No result" });
+                    reject({ status: "no result" });
 
                 resolve(Object.values(trData).reverse().pop());
             }).catch(reject);
@@ -314,7 +314,6 @@ export class SendX implements CourierClass<CourierData> {
                 url: `https://api.sendx.gr/user/hp/${tracking}`
             })
                 .then((result) => {
-                    console.log(lang);
                     let obj = 0, data = result.data, trData: TrackingData = {};
 
                     data.trackingDetails.forEach((e: Utils.SendX.trackingDetails) => {
@@ -328,9 +327,11 @@ export class SendX implements CourierClass<CourierData> {
 
                         obj++;
                     })
+                    console.log(Object.values(trData));
                     resolve(Object.values(trData));
                 }).catch((err) => {
-                    if (err.statusCode == 400) reject({ status: "No result" });
+                    if (err.response.data.error_description === 'Wrong tracking id format') reject({ status: "invalid tracking code"})
+                    if (err.statusCode == 400 || !err.response.data.success) reject({ status: "no result" });
                 });
         })
     }
@@ -389,7 +390,7 @@ export class CourierCenter implements CourierClass<CourierData> {
                     })
                 })
                 let trArray = Object.values(trData).reverse()
-                if (trArray.length < 1) return reject({ status: "No result" });
+                if (trArray.length < 1) return reject({ status: "no result" });
                 trArray.pop()
                 resolve(trArray);
             })

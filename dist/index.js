@@ -16,7 +16,7 @@ class Elta {
             }).then((result) => {
                 const data = result.data.result[tracking].result;
                 if (typeof data === "string")
-                    reject({ status: "No results were provided by the selected courier service!" });
+                    reject({ status: "no result" });
                 else
                     resolve(data);
             }).catch(reject);
@@ -119,7 +119,7 @@ class SpeedPak {
                 if (!result.data.success)
                     return reject({ status: "Unspecified Error" });
                 if (result.data.result.notExistsTrackingNumbers.length !== 0)
-                    return reject({ status: "No result" });
+                    return reject({ status: "no result" });
                 let obj = 0, trData = {};
                 result.data.result.waybills[0].traces.forEach((trace) => {
                     if (!trData[obj])
@@ -161,7 +161,7 @@ class Geniki {
                 });
                 const contentElement = DOM.window.document.getElementById("edit-content");
                 if (!contentElement)
-                    reject({ status: "No results were provided by the selected courier service!" });
+                    reject({ status: "no result" });
                 const trDOM = new jsdom_1.JSDOM(contentElement?.innerHTML);
                 let obj = 0, trData = {};
                 Array.prototype.forEach.call(trDOM.window.document.getElementsByClassName("checkpoint-status"), (element) => {
@@ -196,9 +196,9 @@ class Geniki {
                     obj += 1;
                 });
                 if (Object.keys(trData).length < 1)
-                    reject({ status: "No results were provided by the selected courier service!" });
+                    reject({ status: "no result" });
                 resolve(Object.values(trData));
-            }).catch(() => reject({ status: "Invalid tracking code!" }));
+            }).catch(() => reject({ status: "invalid tracking code" }));
         });
     }
 }
@@ -276,7 +276,7 @@ class EasyMail {
                     });
                 });
                 if (Object.keys(trData).length < 1)
-                    reject({ status: "No result" });
+                    reject({ status: "no result" });
                 resolve(Object.values(trData).reverse().pop());
             }).catch(reject);
         });
@@ -291,7 +291,6 @@ class SendX {
                 url: `https://api.sendx.gr/user/hp/${tracking}`
             })
                 .then((result) => {
-                console.log(lang);
                 let obj = 0, data = result.data, trData = {};
                 data.trackingDetails.forEach((e) => {
                     if (!trData[obj])
@@ -305,10 +304,13 @@ class SendX {
                         trData[obj].status = e.description;
                     obj++;
                 });
+                console.log(Object.values(trData));
                 resolve(Object.values(trData));
             }).catch((err) => {
-                if (err.statusCode == 400)
-                    reject({ status: "No result" });
+                if (err.response.data.error_description === 'Wrong tracking id format')
+                    reject({ status: "invalid tracking code" });
+                if (err.statusCode == 400 || !err.response.data.success)
+                    reject({ status: "no result" });
             });
         });
     }
@@ -370,7 +372,7 @@ class CourierCenter {
                 });
                 let trArray = Object.values(trData).reverse();
                 if (trArray.length < 1)
-                    return reject({ status: "No result" });
+                    return reject({ status: "no result" });
                 trArray.pop();
                 resolve(trArray);
             });
