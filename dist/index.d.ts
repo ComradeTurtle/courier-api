@@ -23,3 +23,6 @@ export declare class EasyMail implements CourierClass<CourierData> {
 export declare class SendX implements CourierClass<CourierData> {
     get(tracking: string, lang?: string): Promise<any>;
 }
+export declare class CourierCenter implements CourierClass<CourierData> {
+    get(tracking: string): Promise<any>;
+}

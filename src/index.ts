@@ -334,5 +334,65 @@ export class SendX implements CourierClass<CourierData> {
                 });
         })
     }
+}
 
+export class CourierCenter implements CourierClass<CourierData> {
+    get(tracking: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let obj = 0, c0 = 0, c1 = 1, c2 = 0, trData: TrackingData = {};
+
+            Axios.request({
+                method: 'POST',
+                url: 'https://www.courier.gr/track/result/',
+                data: `tracknr=${tracking}`
+            })
+            .then((result) => {
+                const DOM = new JSDOM(result.data);
+
+                const table = DOM.window.document.getElementsByClassName('tr');
+                Array.prototype.forEach.call(table, (element: Element) => {
+
+                    // First set the time for all objects
+                    let tdiv = element.getElementsByClassName('time');
+                    Array.prototype.forEach.call(tdiv, (e: Element) => {
+                        if (!trData[obj]) trData[obj] = {};
+                        if (!e) return;
+                        trData[obj].time = e.innerHTML;
+                        obj++;
+                    })
+
+                    // Now set the date and do not create objects since they have already been created..
+                    let ddiv = element.getElementsByClassName('date');
+                    Array.prototype.forEach.call(ddiv, (e: Element) => {
+                        if (!trData[c0]) trData[c0] = {};
+                        if (!e) return;
+                        trData[c0].date = e.innerHTML;
+                        c0++;
+                    })
+
+                    // Now set the action for each object..
+                    let adiv = element.getElementsByClassName('action');
+                    Array.prototype.forEach.call(adiv, (e: Element) => {
+                        if (!trData[c1]) trData[c1] = {};
+                        if (!e) return;
+                        trData[c1].status = e.innerHTML;
+                        c1++;
+                    })
+
+                    // Finally set the place
+                    let pdiv = element.getElementsByClassName('area');
+                    Array.prototype.forEach.call(pdiv, (e: Element) => {
+                        if (!trData[c2]) trData[c2] = {};
+                        if (!e) return;
+                        trData[c2].place = e.innerHTML;
+                        c2++;
+                    })
+                })
+                let trArray = Object.values(trData).reverse()
+                if (trArray.length < 1) return reject({ status: "No result" });
+                trArray.pop()
+                resolve(trArray);
+            })
+        })
+    }
 }
